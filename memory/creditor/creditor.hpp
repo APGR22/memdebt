@@ -4,24 +4,18 @@
 #include <memory>
 #include <utility>
 #include <iostream>
+#include "../../helper/hex.hpp"
+#include "../../dependencies/uuidv7/uuidv7.hpp"
+
+#include "../../type/test.hpp"
 
 namespace memdebt::memory::creditor
 {
-    struct T
-    {
-        int val = 0;
-
-        ~T()
-        {
-            std::cout << "T is destroyed: " << this->val << std::endl;
-        }
-    };
-
     class Creditor
     {
         private:
             std::unordered_map<
-                T *,
+                std::string,
                 std::unique_ptr<T>
             > __src_memory;
 
@@ -30,10 +24,11 @@ namespace memdebt::memory::creditor
             {
                 auto item = std::make_unique<T>(value);
                 item->val = 0;
-                this->__src_memory.insert_or_assign(
-                    item.get(),
-                    std::move(item)
-                );
+
+                auto key = uuidv7();
+                std::string key_str = memdebt::helper::hex(key);
+
+                this->__src_memory.insert({key_str, std::move(item)});
             }
 
             ~Creditor()

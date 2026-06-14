@@ -5,7 +5,7 @@ int main()
 {
     memdebt::memory::creditor::Creditor creditor;
 
-    memdebt::memory::creditor::T value;
+    T value;
     value.val = 10;
 
     creditor.add(value);
