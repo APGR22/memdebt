@@ -30,5 +30,10 @@ namespace memdebt::memory::creditor
                 bank::Bank<T> bank(this->__src_memory);
                 return debtor::Debtor<T>(bank, key_str);
             }
+
+            void sub(const std::string &key)
+            {
+                this->__src_memory.erase(key);
+            }
     };
 }

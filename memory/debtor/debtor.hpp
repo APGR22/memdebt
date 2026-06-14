@@ -22,6 +22,11 @@ namespace memdebt::memory::debtor
                 return *(this->__bank.get(this->__key));
             }
 
+            const std::string &key() const
+            {
+                return this->__key;
+            }
+
             bool check() const
             {
                 return this->__bank.get(this->__key);
