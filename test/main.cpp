@@ -1,8 +1,14 @@
 #include <iostream>
+#include "../memory/creditor/creditor.hpp"
 
 int main()
 {
-    std::cout << "First time" << std::endl;
+    memdebt::memory::creditor::Creditor creditor;
+
+    memdebt::memory::creditor::T value;
+    value.val = 10;
+
+    creditor.add(value);
 
     return 0;
 }
