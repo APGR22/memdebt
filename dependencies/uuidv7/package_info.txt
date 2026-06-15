@@ -1,5 +1,0 @@
-Made by: https://github.com/nalgeon/
-Repo url: https://github.com/nalgeon/uuidv7.git
-Version: -
-Copyright: - Anton Zhiyanov
-License: The Unlicense

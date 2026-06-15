@@ -1,13 +1,11 @@
 #pragma once
 
-#include <unordered_map>
+#include <list>
 #include <memory>
-#include <utility>
-#include <iostream>
-#include "../bank/bank.hpp"
+#include "type.hpp"
 #include "../debtor/debtor.hpp"
-#include "../../helper/hex.hpp"
-#include "../../dependencies/uuidv7/uuidv7.hpp"
+
+// #include "../../type/test.hpp"
 
 namespace memdebt::memory::creditor
 {
@@ -15,25 +13,24 @@ namespace memdebt::memory::creditor
     class Creditor
     {
         private:
-            bank::Bank<T>::type __src_memory;
+            type<T> __src_memory;
 
         public:
             debtor::Debtor<T> add(const T &value)
             {
-                auto item = std::make_unique<T>(value);
+                auto item = std::make_shared<T>(value);
 
-                auto key = uuidv7();
-                std::string key_str = memdebt::helper::hex(key);
+                this->__src_memory.push_back(item);
 
-                this->__src_memory.insert({key_str, std::move(item)});
+                auto it = this->__src_memory.end();
+                it--;
 
-                bank::Bank<T> bank(this->__src_memory);
-                return debtor::Debtor<T>(bank, key_str);
+                return debtor::Debtor<T>(item, item.get(), it);
             }
 
-            void sub(const std::string &key)
+            void sub(const type<T>::const_iterator &it)
             {
-                this->__src_memory.erase(key);
+                this->__src_memory.erase(it);
             }
     };
 }

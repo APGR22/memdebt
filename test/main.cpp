@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include "../memory/creditor/creditor.hpp"
 
 struct test
@@ -21,7 +22,7 @@ int main()
     auto debtor = creditor.add(value);
     debtor->val = 0;
 
-    creditor.sub(debtor.key());
+    creditor.sub(debtor.get_it_pos());
 
     std::cout << "Is the memory still there: " << debtor.check() << std::endl;
 

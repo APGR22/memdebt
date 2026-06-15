@@ -1,7 +1,9 @@
 #pragma once
 
-#include <string>
-#include "../bank/bank.hpp"
+#include <memory>
+#include "../creditor/type.hpp"
+
+// #include "../../type/test.hpp"
 
 namespace memdebt::memory::debtor
 {
@@ -9,32 +11,37 @@ namespace memdebt::memory::debtor
     class Debtor 
     {
         private:
-            bank::Bank<T> __bank;
-            std::string __key;
+            std::weak_ptr<T> __borrow;
+            T *__item;
+            creditor::type<T>::const_iterator __it;
 
         public:
-            Debtor(const bank::Bank<T> &bank, const std::string &key)
-            : __bank(bank), __key(key)
+            Debtor(
+                const std::weak_ptr<T> &borrow,
+                T *item,
+                const creditor::type<T>::const_iterator &it
+            )
+            : __borrow(borrow), __item(item), __it(it)
             {}
 
             T &get() const
             {
-                return *(this->__bank.get(this->__key));
+                return *(this->__item);
             }
 
-            const std::string &key() const
+            const auto &get_it_pos() const
             {
-                return this->__key;
+                return this->__it;
             }
 
             bool check() const
             {
-                return this->__bank.get(this->__key);
+                return !(this->__borrow.expired());
             }
 
             T *operator->() const
             {
-                return this->__bank.get(this->__key);
+                return this->__item;
             }
     };
 }
