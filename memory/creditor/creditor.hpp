@@ -2,8 +2,12 @@
 
 #include <list>
 #include <memory>
+#include <utility>
+#include <iostream>
+#include "creditor_fwd.hpp"
 #include "type.hpp"
 #include "../debtor/debtor.hpp"
+#include "../debtor/enable_debtor_from_this.hpp"
 
 namespace memdebt::memory::creditor
 {
@@ -23,7 +27,16 @@ namespace memdebt::memory::creditor
                 auto it = this->__src_memory.end();
                 it--;
 
-                return debtor::Debtor<T>(item, item.get(), it);
+                debtor::Debtor<T> debtor(item, item.get(), it);
+
+                if constexpr (
+                    std::is_base_of_v<debtor::enable_debtor_from_this<T>, T>
+                )
+                {
+                    item->__debtor_base = debtor;
+                }
+
+                return debtor;
             }
 
             void sub(const type<T>::const_iterator &it)

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <memory>
-#include "../memory/creditor/creditor.hpp"
+#include "../memdebt.hpp"
 
-struct test
+struct test : public memdebt::memory::debtor::enable_debtor_from_this<test>
 {
     int val = 10;
 
@@ -22,13 +22,20 @@ int main()
     auto debtor = creditor.add(value);
     debtor->val = 0;
 
-    creditor.sub(debtor.get_it_pos());
+    auto this_debtor = debtor->debtor_from_this();
 
-    std::cout << "Is the memory still there: " << debtor.check() << std::endl;
+    std::cout
+    << "Are debtor and this_debtor values same: "
+    << (debtor.get() == this_debtor.get())
+    << std::endl;
 
-    memdebt::memory::debtor::Debtor<test> empty_debtor;
+    memdebt::memory::debtor::Debtor<test> cp_debtor;
+    cp_debtor = debtor;
 
-    std::cout << "Is empty_debtor really empty: " << !debtor.check() << std::endl;
+    std::cout
+    << "Are debtor and cp_debtor values same: "
+    << (debtor.get() == cp_debtor.get())
+    << std::endl;
 
     return 0;
 }
