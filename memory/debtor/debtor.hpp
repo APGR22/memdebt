@@ -26,9 +26,9 @@ namespace memdebt::memory::debtor
             : __borrow(borrow), __item(item), __it(it)
             {}
 
-            T &get() const
+            T *get() const
             {
-                return *(this->__item);
+                return this->__item;
             }
 
             const auto &get_it_pos() const
