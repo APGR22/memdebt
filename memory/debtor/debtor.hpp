@@ -11,7 +11,7 @@ namespace memdebt::memory::debtor
         private:
             std::weak_ptr<T> __borrow;
             T *__item;
-            creditor::type<T>::const_iterator __it;
+            creditor::type<T>::iterator __it;
 
         public:
             Debtor()
@@ -21,7 +21,7 @@ namespace memdebt::memory::debtor
             Debtor(
                 const std::weak_ptr<T> &borrow,
                 T *item,
-                const creditor::type<T>::const_iterator &it
+                const creditor::type<T>::iterator &it
             )
             : __borrow(borrow), __item(item), __it(it)
             {}
@@ -31,9 +31,16 @@ namespace memdebt::memory::debtor
                 return this->__item;
             }
 
-            const auto &get_it_pos() const
+            creditor::type<T>::const_iterator get_it_pos() const
             {
                 return this->__it;
+            }
+
+            void clear()
+            {
+                this->__borrow.reset();
+                this->__item = nullptr;
+                this->__it = {};
             }
 
             bool check() const

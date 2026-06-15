@@ -37,5 +37,12 @@ int main()
     << (debtor.get() == cp_debtor.get())
     << std::endl;
 
+    debtor.clear();
+
+    std::cout
+    << "Has the debtor reset: "
+    << !debtor.check()
+    << std::endl;
+
     return 0;
 }
