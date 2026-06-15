@@ -14,6 +14,10 @@ namespace memdebt::memory::debtor
             creditor::type<T>::const_iterator __it;
 
         public:
+            Debtor()
+            : __item(nullptr)
+            {}
+
             Debtor(
                 const std::weak_ptr<T> &borrow,
                 T *item,

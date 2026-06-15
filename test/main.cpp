@@ -26,5 +26,9 @@ int main()
 
     std::cout << "Is the memory still there: " << debtor.check() << std::endl;
 
+    memdebt::memory::debtor::Debtor<test> empty_debtor;
+
+    std::cout << "Is empty_debtor really empty: " << !debtor.check() << std::endl;
+
     return 0;
 }
