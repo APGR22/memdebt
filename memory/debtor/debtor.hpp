@@ -52,5 +52,10 @@ namespace memdebt::memory::debtor
             {
                 return this->__item;
             }
+
+            T &operator*() const
+            {
+                return *this->__item;
+            }
     };
 }

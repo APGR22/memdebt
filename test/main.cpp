@@ -20,28 +20,11 @@ int main()
     value.val = 10;
 
     auto debtor = creditor.add(value);
-    debtor->val = 0;
-
-    auto this_debtor = debtor->debtor_from_this();
+    debtor->val = 1000;
 
     std::cout
-    << "Are debtor and this_debtor values same: "
-    << (debtor.get() == this_debtor.get())
-    << std::endl;
-
-    memdebt::memory::debtor::Debtor<test> cp_debtor;
-    cp_debtor = debtor;
-
-    std::cout
-    << "Are debtor and cp_debtor values same: "
-    << (debtor.get() == cp_debtor.get())
-    << std::endl;
-
-    debtor.clear();
-
-    std::cout
-    << "Has the debtor reset: "
-    << !debtor.check()
+    << "Get referenced: "
+    << (*debtor).val
     << std::endl;
 
     return 0;
