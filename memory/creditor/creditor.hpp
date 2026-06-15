@@ -5,8 +5,6 @@
 #include "type.hpp"
 #include "../debtor/debtor.hpp"
 
-// #include "../../type/test.hpp"
-
 namespace memdebt::memory::creditor
 {
     template<typename T>

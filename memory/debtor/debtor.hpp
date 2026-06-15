@@ -3,8 +3,6 @@
 #include <memory>
 #include "../creditor/type.hpp"
 
-// #include "../../type/test.hpp"
-
 namespace memdebt::memory::debtor
 {
     template<typename T>
