@@ -43,5 +43,10 @@ namespace memdebt::memory::creditor
             {
                 this->__src_memory.erase(it);
             }
+
+            void clear()
+            {
+                this->__src_memory.clear();
+            }
     };
 }
