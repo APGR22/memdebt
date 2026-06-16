@@ -12,6 +12,8 @@ namespace memdebt::memory::debtor
             std::weak_ptr<creditor::type<T>> __borrow;
             creditor::type<T> *__item;
 
+            std::shared_ptr<creditor::type<T>> __lock_valid_access;
+
         public:
             Debtor()
             : __item(nullptr)
@@ -32,6 +34,21 @@ namespace memdebt::memory::debtor
             uint64_t get_index() const
             {
                 return this->__item->index;
+            }
+
+            bool lock_valid()
+            {
+                if (this->__lock_valid_access = this->__borrow.lock())
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            void unlock_valid()
+            {
+                this->__lock_valid_access.reset();
             }
 
             void clear()

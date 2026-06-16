@@ -67,7 +67,22 @@ int main()
     << debtor_4->val
     << '\n';
 
+    debtor_4.lock_valid();
+
     creditor.release(debtor_4.get_index());
+
+    if (debtor_4.check())
+    {
+        std::cout
+        << "debtor_4 is saved"
+        << " | index: "
+        << debtor_4.get_index()
+        << " | value: "
+        << debtor_4->val
+        << '\n';
+
+        debtor_4.unlock_valid();
+    }
 
     return 0;
 }
