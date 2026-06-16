@@ -15,33 +15,55 @@ namespace memdebt::memory::creditor
     class Creditor
     {
         private:
-            type<T> __src_memory;
+            memory_type<T> __src_memory;
+
+        protected:
+            inline uint64_t _get_end_index()
+            {
+                return this->__src_memory.size();
+            }
+
+            inline uint64_t _get_last_index()
+            {
+                return this->__src_memory.size() - 1;
+            }
 
         public:
             debtor::Debtor<T> borrow(const T &value)
             {
-                auto item = std::make_shared<T>(value);
+                type<T> item = {this->_get_end_index(), value};
+                auto item_ptr = std::make_shared<type<T>>(item);
 
-                this->__src_memory.push_back(item);
+                this->__src_memory.push_back(item_ptr);
 
-                auto it = this->__src_memory.end();
-                it--;
-
-                debtor::Debtor<T> debtor(item, item.get(), it);
+                debtor::Debtor<T> debtor(item_ptr, item_ptr.get());
 
                 if constexpr (
                     std::is_base_of_v<debtor::enable_debtor_from_this<T>, T>
                 )
                 {
-                    item->__debtor_base = debtor;
+                    item_ptr->data.__debtor_base = debtor;
                 }
 
                 return debtor;
             }
 
-            void release(const type<T>::const_iterator &it)
+            void release(uint64_t index)
             {
-                this->__src_memory.erase(it);
+                uint64_t last_index = this->_get_last_index();
+
+                if (index != last_index)
+                {
+                    auto &item_ptr = this->__src_memory[index];
+                    auto &last_item_ptr = this->__src_memory[last_index];
+
+                    item_ptr.swap(last_item_ptr);
+
+                    item_ptr->index = index;
+                    last_item_ptr->index = last_index;
+                }
+
+                this->__src_memory.pop_back();
             }
 
             void clear()

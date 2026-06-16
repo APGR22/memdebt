@@ -1,10 +1,17 @@
 #pragma once
 
-#include <list>
+#include <vector>
 #include <memory>
 
 namespace memdebt::memory::creditor
 {
     template<typename T>
-    using type = std::list<std::shared_ptr<T>>;
+    struct type
+    {
+        uint64_t index;
+        T data;
+    };
+
+    template<typename T>
+    using memory_type = std::vector<std::shared_ptr<type<T>>>;
 }

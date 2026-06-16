@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-// namespace memdebt::type
+// namespace memdebt::memory_type
 // {
     struct T
     {
