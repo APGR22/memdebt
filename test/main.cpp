@@ -19,7 +19,7 @@ int main()
     test value;
     value.val = 10;
 
-    auto debtor = creditor.add(value);
+    auto debtor = creditor.borrow(value);
     debtor->val = 1000;
 
     std::cout

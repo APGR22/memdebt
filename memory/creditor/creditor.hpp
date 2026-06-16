@@ -18,7 +18,7 @@ namespace memdebt::memory::creditor
             type<T> __src_memory;
 
         public:
-            debtor::Debtor<T> add(const T &value)
+            debtor::Debtor<T> borrow(const T &value)
             {
                 auto item = std::make_shared<T>(value);
 
@@ -39,7 +39,7 @@ namespace memdebt::memory::creditor
                 return debtor;
             }
 
-            void sub(const type<T>::const_iterator &it)
+            void release(const type<T>::const_iterator &it)
             {
                 this->__src_memory.erase(it);
             }
