@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <utility>
 #include "../memdebt.hpp"
 
 struct test : public memdebt::memory::debtor::enable_debtor_from_this<test>
@@ -21,80 +22,55 @@ int main()
     auto debtor_1 = creditor.borrow(value);
     debtor_1->val = 1000;
 
-    std::cout
-    << "index: "
-    << debtor_1.get_index()
-    << " | value: "
-    << debtor_1->val
-    << '\n';
+    auto debtor_2 = std::move(debtor_1);
 
-    auto debtor_2 = creditor.borrow(value);
-    debtor_2->val = 2000;
+    if (!debtor_1.check())
+    {
+        std::cout << "Debtor 1 has destroyed because it has moved" << '\n';
+    }
 
-    std::cout
-    << "index: "
-    << debtor_2.get_index()
-    << " | value: "
-    << debtor_2->val
-    << '\n';
+    if (debtor_2.check())
+    {
+        std::cout << "Debtor 2 is valid because moved from Debtor 1" << '\n';
+    }
 
     auto debtor_3 = creditor.borrow(value);
-    debtor_3->val = 3000;
+    debtor_3->val = 2000;
 
-    std::cout
-    << "index: "
-    << debtor_3.get_index()
-    << " | value: "
-    << debtor_3->val
-    << '\n';
+    auto debtor_4 = debtor_3;
 
-    creditor.release(debtor_1.get_index());
-
-    std::cout
-    << "index: "
-    << debtor_3.get_index()
-    << " | value: "
-    << debtor_3->val
-    << '\n';
-
-    auto debtor_4 = creditor.borrow(value);
-    debtor_4->val = 4000;
-
-    std::cout
-    << "index: "
-    << debtor_4.get_index()
-    << " | value: "
-    << debtor_4->val
-    << '\n';
-
-    auto cp_debtor_4 = debtor_4;
-    cp_debtor_4.lock_access();
-
-    debtor_4.lock_access();
-
-    creditor.release(debtor_4.get_index());
+    if (debtor_3.check())
+    {
+        std::cout << "Debtor 3 is still valid because it just copied" << '\n';
+    }
 
     if (debtor_4.check())
     {
-        std::cout
-        << "debtor_4 is saved"
-        << " | index: "
-        << debtor_4.get_index()
-        << " | is null: "
-        << (debtor_4.get() == nullptr)
-        << " | is read_only null: "
-        << (debtor_4.get_read_only() == nullptr)
-        << " | locked: "
-        << debtor_4.is_locked_access()
-        << " | locked by this: "
-        << debtor_4.is_locked_access_by_this()
-        << '\n';
-
-        debtor_4.unlock_access();
+        std::cout << "Debtor 4 is valid because copied from Debtor 3" << '\n';
     }
 
-    auto cp_debtor_4_item = debtor_4.copy();
-    cp_debtor_4_item->val = 4444;
+    memdebt::memory::debtor::Debtor<test> debtor_5;
+    if (!debtor_5.check())
+    {
+        std::cout << "Debtor 5 is null because it's not from Creditor" << '\n';
+    }
+
+    debtor_5 = std::move(debtor_4);
+
+    if (debtor_3.check())
+    {
+        std::cout << "Debtor 3 is still valid because there's nothing to do with it" << '\n';
+    }
+
+    if (!debtor_4.check())
+    {
+        std::cout << "Debtor 4 has destroyed because it has moved" << '\n';
+    }
+
+    if (debtor_5.check())
+    {
+        std::cout << "Debtor 5 is valid because moved from Debtor 4" << '\n';
+    }
 
     return 0;
 }

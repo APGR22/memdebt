@@ -27,6 +27,22 @@ namespace memdebt::memory::debtor
             : __borrow(borrow), __item(item)
             {}
 
+            Debtor(const Debtor &other)
+            :
+                __borrow(other.__borrow),
+                __item(other.__item)
+            {}
+
+            Debtor(Debtor &&other)
+            :
+                __borrow(other.__borrow),
+                __item(other.__item),
+                __lock_valid_access(other.__lock_valid_access),
+                __is_lock_access_by_this(other.__is_lock_access_by_this)
+            {
+                other.clear();
+            }
+
             T *get() const
             {
                 if (this->__item->lock && !this->__is_lock_access_by_this) return nullptr;
@@ -93,6 +109,7 @@ namespace memdebt::memory::debtor
 
             void clear()
             {
+                this->unlock_access();
                 this->__borrow.reset();
                 this->__item = nullptr;
                 this->__lock_valid_access.reset();
@@ -115,6 +132,36 @@ namespace memdebt::memory::debtor
                 return this->__is_lock_access_by_this;
             }
 
+            Debtor &operator=(const Debtor &other)
+            {
+                if (this != &other)
+                {
+                    this->clear();
+
+                    this->__borrow = other.__borrow;
+                    this->__item = other.__item;
+                }
+
+                return *this;
+            }
+
+            Debtor &operator=(Debtor &&other)
+            {
+                if (this != &other)
+                {
+                    this->clear();
+
+                    this->__borrow = other.__borrow;
+                    this->__item = other.__item;
+                    this->__lock_valid_access = other.__lock_valid_access;
+                    this->__is_lock_access_by_this = other.__is_lock_access_by_this;
+
+                    other.clear();
+                }
+
+                return *this;
+            }
+
             T *operator->() const
             {
                 if (this->__item->lock && !this->__is_lock_access_by_this) return nullptr;
@@ -131,7 +178,6 @@ namespace memdebt::memory::debtor
 
             ~Debtor()
             {
-                this->unlock_access();
                 this->clear();
             }
     };
