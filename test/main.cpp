@@ -93,5 +93,8 @@ int main()
         debtor_4.unlock_access();
     }
 
+    auto cp_debtor_4_item = debtor_4.copy();
+    cp_debtor_4_item->val = 4444;
+
     return 0;
 }

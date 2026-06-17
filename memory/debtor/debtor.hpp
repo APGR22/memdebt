@@ -44,6 +44,16 @@ namespace memdebt::memory::debtor
                 return this->__item->index;
             }
 
+            std::shared_ptr<T> copy() const
+            {
+                if (auto shared = this->__borrow.lock())
+                {
+                    return std::make_shared<T>(shared->data);
+                }
+
+                return {};
+            }
+
             bool lock_valid()
             {
                 if (this->__lock_valid_access = this->__borrow.lock())
