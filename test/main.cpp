@@ -67,7 +67,10 @@ int main()
     << debtor_4->val
     << '\n';
 
-    debtor_4.lock_valid();
+    auto cp_debtor_4 = debtor_4;
+    cp_debtor_4.lock_access();
+
+    debtor_4.lock_access();
 
     creditor.release(debtor_4.get_index());
 
@@ -77,11 +80,17 @@ int main()
         << "debtor_4 is saved"
         << " | index: "
         << debtor_4.get_index()
-        << " | value: "
-        << debtor_4->val
+        << " | is null: "
+        << (debtor_4.get() == nullptr)
+        << " | is read_only null: "
+        << (debtor_4.get_read_only() == nullptr)
+        << " | locked: "
+        << debtor_4.is_locked_access()
+        << " | locked by this: "
+        << debtor_4.is_locked_access_by_this()
         << '\n';
 
-        debtor_4.unlock_valid();
+        debtor_4.unlock_access();
     }
 
     return 0;

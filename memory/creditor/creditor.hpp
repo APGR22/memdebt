@@ -48,13 +48,14 @@ namespace memdebt::memory::creditor
                 return debtor;
             }
 
-            void release(uint64_t index)
+            bool release(uint64_t index)
             {
-                uint64_t last_index = this->_get_last_index();
+                auto &item_ptr = this->__src_memory[index];
+                if (item_ptr->lock) return false;
 
+                uint64_t last_index = this->_get_last_index();
                 if (index != last_index)
                 {
-                    auto &item_ptr = this->__src_memory[index];
                     auto &last_item_ptr = this->__src_memory[last_index];
 
                     item_ptr.swap(last_item_ptr);
@@ -64,6 +65,8 @@ namespace memdebt::memory::creditor
                 }
 
                 this->__src_memory.pop_back();
+
+                return true;
             }
 
             void clear()

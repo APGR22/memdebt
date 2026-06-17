@@ -13,6 +13,7 @@ namespace memdebt::memory::debtor
             creditor::type<T> *__item;
 
             std::shared_ptr<creditor::type<T>> __lock_valid_access;
+            bool __is_lock_access_by_this = false;
 
         public:
             Debtor()
@@ -27,6 +28,13 @@ namespace memdebt::memory::debtor
             {}
 
             T *get() const
+            {
+                if (this->__item->lock && !this->__is_lock_access_by_this) return nullptr;
+
+                return &(this->__item->data);
+            }
+
+            const T *get_read_only() const
             {
                 return &(this->__item->data);
             }
@@ -46,15 +54,38 @@ namespace memdebt::memory::debtor
                 return false;
             }
 
+            bool lock_access()
+            {
+                if (this->__borrow.expired()) return false;
+                if (this->__item->lock && !this->__is_lock_access_by_this) return false;
+
+                this->__item->lock = true;
+                this->__is_lock_access_by_this = true;
+
+                return true;
+            }
+
             void unlock_valid()
             {
                 this->__lock_valid_access.reset();
+            }
+
+            bool unlock_access()
+            {
+                if (this->__borrow.expired()) return false;
+                if (this->__item->lock && !this->__is_lock_access_by_this) return false;
+
+                this->__item->lock = false;
+                this->__is_lock_access_by_this = false;
+
+                return true;
             }
 
             void clear()
             {
                 this->__borrow.reset();
                 this->__item = nullptr;
+                this->__lock_valid_access.reset();
             }
 
             bool check() const
@@ -62,14 +93,36 @@ namespace memdebt::memory::debtor
                 return !(this->__borrow.expired());
             }
 
+            bool is_locked_access() const
+            {
+                if (this->__borrow.expired()) return false;
+
+                return this->__item->lock;
+            }
+
+            bool is_locked_access_by_this() const
+            {
+                return this->__is_lock_access_by_this;
+            }
+
             T *operator->() const
             {
+                if (this->__item->lock && !this->__is_lock_access_by_this) return nullptr;
+
                 return &(this->__item->data);
             }
 
             T &operator*() const
             {
+                if (this->__item->lock && !this->__is_lock_access_by_this) return nullptr;
+
                 return this->__item->data;
+            }
+
+            ~Debtor()
+            {
+                this->unlock_access();
+                this->clear();
             }
     };
 }

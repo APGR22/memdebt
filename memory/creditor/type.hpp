@@ -10,6 +10,7 @@ namespace memdebt::memory::creditor
     {
         uint64_t index;
         T data;
+        bool lock;
     };
 
     template<typename T>
