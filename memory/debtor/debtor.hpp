@@ -13,7 +13,7 @@ namespace memdebt::memory::debtor
             creditor::type<T> *__item;
 
             std::shared_ptr<creditor::type<T>> __lock_valid_access;
-            bool __is_lock_access_by_this = false;
+            bool __has_locked_access = false;
 
         public:
             Debtor()
@@ -38,14 +38,14 @@ namespace memdebt::memory::debtor
                 __borrow(other.__borrow),
                 __item(other.__item),
                 __lock_valid_access(other.__lock_valid_access),
-                __is_lock_access_by_this(other.__is_lock_access_by_this)
+                __has_locked_access(other.__has_locked_access)
             {
                 other.clear();
             }
 
             T *get() const
             {
-                if (this->__item->lock && !this->__is_lock_access_by_this) return nullptr;
+                if (this->__item->lock && !this->__has_locked_access) return nullptr;
 
                 return &(this->__item->data);
             }
@@ -83,10 +83,10 @@ namespace memdebt::memory::debtor
             bool lock_access()
             {
                 if (this->__borrow.expired()) return false;
-                if (this->__item->lock && !this->__is_lock_access_by_this) return false;
+                if (this->__item->lock && !this->__has_locked_access) return false;
 
                 this->__item->lock = true;
-                this->__is_lock_access_by_this = true;
+                this->__has_locked_access = true;
 
                 return true;
             }
@@ -99,10 +99,10 @@ namespace memdebt::memory::debtor
             bool unlock_access()
             {
                 if (this->__borrow.expired()) return false;
-                if (this->__item->lock && !this->__is_lock_access_by_this) return false;
+                if (this->__item->lock && !this->__has_locked_access) return false;
 
                 this->__item->lock = false;
-                this->__is_lock_access_by_this = false;
+                this->__has_locked_access = false;
 
                 return true;
             }
@@ -120,16 +120,21 @@ namespace memdebt::memory::debtor
                 return !(this->__borrow.expired());
             }
 
-            bool is_locked_access() const
+            bool is_valid_locked() const
+            {
+                return this->__lock_valid_access.use_count() > 0;
+            }
+
+            bool is_access_locked() const
             {
                 if (this->__borrow.expired()) return false;
 
                 return this->__item->lock;
             }
 
-            bool is_locked_access_by_this() const
+            bool has_locked_access() const
             {
-                return this->__is_lock_access_by_this;
+                return this->__has_locked_access;
             }
 
             Debtor &operator=(const Debtor &other)
@@ -154,7 +159,7 @@ namespace memdebt::memory::debtor
                     this->__borrow = other.__borrow;
                     this->__item = other.__item;
                     this->__lock_valid_access = other.__lock_valid_access;
-                    this->__is_lock_access_by_this = other.__is_lock_access_by_this;
+                    this->__has_locked_access = other.__has_locked_access;
 
                     other.clear();
                 }
@@ -164,14 +169,14 @@ namespace memdebt::memory::debtor
 
             T *operator->() const
             {
-                if (this->__item->lock && !this->__is_lock_access_by_this) return nullptr;
+                if (this->__item->lock && !this->__has_locked_access) return nullptr;
 
                 return &(this->__item->data);
             }
 
             T &operator*() const
             {
-                if (this->__item->lock && !this->__is_lock_access_by_this) return nullptr;
+                if (this->__item->lock && !this->__has_locked_access) return nullptr;
 
                 return this->__item->data;
             }
